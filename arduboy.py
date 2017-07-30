@@ -25,8 +25,7 @@ def main():
     window = sdl2.ext.Window("Simduboy", size=(board.lcd.WIDTH * 8, board.lcd.HEIGHT * 8))
     renderer = SDL_CreateRenderer(window.window, -1, SDL_RENDERER_ACCELERATED)
     SDL_RenderSetLogicalSize(renderer, board.lcd.WIDTH * 8, board.lcd.HEIGHT * 8)
-    
-    pixbuf = [0 for i in range(board.lcd.WIDTH * board.lcd.HEIGHT)]
+
     texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING,
                                 board.lcd.WIDTH, board.lcd.HEIGHT)
 
@@ -35,7 +34,7 @@ def main():
     while running:
         targetTime = SDL_GetTicks() + 17
         
-        board.lcd.draw(pixbuf)
+        pixbuf = board.lcd.draw()
         buffer = (ctypes.c_uint32 * (board.lcd.HEIGHT * board.lcd.WIDTH))(*pixbuf)
         SDL_UpdateTexture(texture, None, buffer, board.lcd.WIDTH * 4)
         SDL_RenderClear(renderer)
