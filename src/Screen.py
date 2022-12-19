@@ -1,4 +1,6 @@
 import sdl2.ext
+from sdl2 import *
+import ctypes
 import array
 
 class Screen:
@@ -12,15 +14,25 @@ class Screen:
         self.sce = board.create_output()
         self.dc = board.create_output()
         self.reset = board.create_output()
+        board.connect_mosi(self.mosi)
         
         self.dirty = False
         self.pixbuf = array.array('I', [0 for i in range(self.WIDTH * self.HEIGHT)])
         self.nextXY = (0, 0)
 
-        board.connect_mosi(self.mosi)
+        self.window = sdl2.ext.Window("Simduboy", size=(self.WIDTH * 8, self.HEIGHT * 8))
+        self.renderer = SDL_CreateRenderer(self.window.window, -1, SDL_RENDERER_ACCELERATED)
+        SDL_RenderSetLogicalSize(self.renderer, self.WIDTH * 8, self.HEIGHT * 8)
+        self.texture = SDL_CreateTexture(self.renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING,
+                                         self.WIDTH, self.HEIGHT)
+        self.window.show()
 
     def draw(self):
-        return self.pixbuf
+        buffer = (ctypes.c_uint32 * (self.HEIGHT * self.WIDTH))(*self.pixbuf)
+        SDL_UpdateTexture(self.texture, None, buffer, self.WIDTH * 4)
+        SDL_RenderClear(self.renderer)
+        SDL_RenderCopy(self.renderer, self.texture, None, None)
+        SDL_RenderPresent(self.renderer)
 
     def mosi(self, value):
         if self.sce.value != 0:
