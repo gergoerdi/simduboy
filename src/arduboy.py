@@ -1,5 +1,7 @@
 #!/usr/bin/env python2
 
+import argparse
+
 import sys
 from sdl2 import *
 import sdl2.ext
@@ -30,8 +32,14 @@ class Arduboy(Board):
         self.buttons = Buttons(self, self.keymap)
 
 def main():
+    parser = argparse.ArgumentParser(
+        description='Arduboy Simulator',
+        usage="%(prog)s IMAGE.elf")
+    parser.add_argument('filename', metavar='IMAGE.elf', help='Path to .elf file')
+    args = parser.parse_args()
+    
     avr = Avr(mcu='atmega32u4',f_cpu=16000000)
-    firmware = Firmware('image.elf')
+    firmware = Firmware(args.filename)
     avr.load_firmware(firmware)
 
     sdl2.ext.init()
