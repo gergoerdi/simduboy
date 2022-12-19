@@ -11,9 +11,9 @@ class Screen:
     BG_COLOR = int(sdl2.ext.Color(0xff, 0x10, 0x10, 0x10))
     
     def __init__(self, board):
-        self.sce = board.create_output()
-        self.dc = board.create_output()
-        self.reset = board.create_output()
+        self.sce = 0
+        self.dc = 0
+        self.reset = 0
         board.connect_mosi(self.mosi)
         
         self.dirty = False
@@ -23,8 +23,9 @@ class Screen:
         self.window = sdl2.ext.Window("Simduboy", size=(self.WIDTH * 8, self.HEIGHT * 8))
         self.renderer = SDL_CreateRenderer(self.window.window, -1, SDL_RENDERER_ACCELERATED)
         SDL_RenderSetLogicalSize(self.renderer, self.WIDTH * 8, self.HEIGHT * 8)
-        self.texture = SDL_CreateTexture(self.renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING,
-                                         self.WIDTH, self.HEIGHT)
+        self.texture = SDL_CreateTexture(
+            self.renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING,
+            self.WIDTH, self.HEIGHT)
         self.window.show()
 
     def draw(self):
@@ -35,10 +36,10 @@ class Screen:
         SDL_RenderPresent(self.renderer)
 
     def mosi(self, value):
-        if self.sce.value != 0:
+        if self.sce != 0:
             return
             
-        if self.dc.value == 0:
+        if self.dc == 0:
             print "Command to screen: 0x%02x" % value
             pass
         else:
