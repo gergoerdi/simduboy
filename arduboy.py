@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 import sys
 import ctypes
 from sdl2 import *
 import sdl2.ext
+import array
 import ctypes
 
 from pysimavr.avr import Avr
@@ -32,7 +33,8 @@ def main():
     window.show()
 
     while running:
-        targetTime = SDL_GetTicks() + 17
+        startTime = SDL_GetTicks()
+        targetTime = startTime + (1000 / 60)
         
         pixbuf = board.lcd.draw()
         buffer = (ctypes.c_uint32 * (board.lcd.HEIGHT * board.lcd.WIDTH))(*pixbuf)
@@ -41,13 +43,17 @@ def main():
         SDL_RenderCopy(renderer, texture, None, None)
         SDL_RenderPresent(renderer)
 
+        drawTime = SDL_GetTicks()
+        
         events = sdl2.ext.get_events()
         for event in events:
             if event.type == SDL_QUIT:
                 running = False
                 break
-            # elif event.type in [SDL_KEYDOWN, SDL_KEYUP]:
-            #     board.keypad.keypress(event.key.keysym.scancode, event.key.state == SDL_PRESSED)
+            elif event.type == SDL_KEYDOWN and event.key.keysym.scancode == SDL_SCANCODE_ESCAPE:
+                running = False
+                break
+        board.buttons.set_keystate(SDL_GetKeyboardState(None))
 
         while SDL_GetTicks() < targetTime:
             avr.run()
