@@ -1,8 +1,7 @@
 import sdl2.ext
-from pysimavr.swig.simavr import avr_alloc_irq
 import array
 
-class LCD:
+class Screen:
     WIDTH = 128
     HEIGHT = 64
 
@@ -28,7 +27,7 @@ class LCD:
             return
             
         if self.dc.value == 0:
-            print "Command to LCD: 0x%02x" % value
+            print "Command to screen: 0x%02x" % value
             pass
         else:
             (x, y) = self.nextXY

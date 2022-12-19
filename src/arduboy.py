@@ -23,12 +23,12 @@ def main():
     
     sdl2.ext.init()
     
-    window = sdl2.ext.Window("Simduboy", size=(board.lcd.WIDTH * 8, board.lcd.HEIGHT * 8))
+    window = sdl2.ext.Window("Simduboy", size=(board.screen.WIDTH * 8, board.screen.HEIGHT * 8))
     renderer = SDL_CreateRenderer(window.window, -1, SDL_RENDERER_ACCELERATED)
-    SDL_RenderSetLogicalSize(renderer, board.lcd.WIDTH * 8, board.lcd.HEIGHT * 8)
+    SDL_RenderSetLogicalSize(renderer, board.screen.WIDTH * 8, board.screen.HEIGHT * 8)
 
     texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING,
-                                board.lcd.WIDTH, board.lcd.HEIGHT)
+                                board.screen.WIDTH, board.screen.HEIGHT)
 
     window.show()
 
@@ -36,9 +36,9 @@ def main():
         startTime = SDL_GetTicks()
         targetTime = startTime + (1000 / 60)
         
-        pixbuf = board.lcd.draw()
-        buffer = (ctypes.c_uint32 * (board.lcd.HEIGHT * board.lcd.WIDTH))(*pixbuf)
-        SDL_UpdateTexture(texture, None, buffer, board.lcd.WIDTH * 4)
+        pixbuf = board.screen.draw()
+        buffer = (ctypes.c_uint32 * (board.screen.HEIGHT * board.screen.WIDTH))(*pixbuf)
+        SDL_UpdateTexture(texture, None, buffer, board.screen.WIDTH * 4)
         SDL_RenderClear(renderer)
         SDL_RenderCopy(renderer, texture, None, None)
         SDL_RenderPresent(renderer)

@@ -4,7 +4,7 @@ from pysimavr.connect import avr_connect_irq
 import pysimavr.swig.utils as utils
 from pysimavr.swig.simavr import avr_raise_irq
 
-from LCD import LCD
+from Screen import Screen
 from Buttons import Buttons
 from sdl2 import *
 
@@ -20,10 +20,10 @@ class Board:
         self.avr = avr
         self.mosi_callbacks = []
 
-        self.lcd = LCD(self)
-        self.connect_output(('D', 6), self.lcd.sce)
-        self.connect_output(('D', 4), self.lcd.dc)
-        self.connect_output(('D', 7), self.lcd.reset)
+        self.screen = Screen(self)
+        self.connect_output(('D', 6), self.screen.sce)
+        self.connect_output(('D', 4), self.screen.dc)
+        self.connect_output(('D', 7), self.screen.reset)
         
         self.buttons = Buttons(self, self.keymap)
 
