@@ -3,28 +3,10 @@ from pysimavr.swig.simavr import avr_alloc_irq, avr_raise_irq
 from pysimavr.connect import avr_connect_irq
 import pysimavr.swig.utils as utils
 
-from Screen import Screen
-from Buttons import Buttons
-from sdl2 import *
-
 class Board:
-    keymap = [ (SDL_SCANCODE_UP,     ('F', 7)),
-               (SDL_SCANCODE_DOWN,   ('F', 4)),
-               (SDL_SCANCODE_LEFT,   ('F', 5)),
-               (SDL_SCANCODE_RIGHT,  ('F', 6)),
-               (SDL_SCANCODE_LCTRL,  ('E', 6)),
-               (SDL_SCANCODE_LSHIFT, ('B', 4)) ]
-
     def __init__(self, avr):
         self.avr = avr
         self.mosi_callbacks = []
-
-        self.screen = Screen(self)
-        self.connect_output(('D', 6), lambda(v): setattr(self.screen, 'sce', v))
-        self.connect_output(('D', 4), lambda(v): setattr(self.screen, 'dc', v))
-        self.connect_output(('D', 7), lambda(v): setattr(self.screen, 'reset', v))
-        
-        self.buttons = Buttons(self, self.keymap)
 
         self.misoirq = avr.irq.getspi(0, utils.SPI_IRQ_INPUT)
         avr.irq.spi_register_notify(self.mosi)
@@ -50,3 +32,4 @@ class Board:
 
     def connect_mosi(self, cb):
         self.mosi_callbacks += [cb]
+        return self.miso
