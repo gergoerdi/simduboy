@@ -10,15 +10,15 @@ class LCD:
     BG_COLOR = int(sdl2.ext.Color(0xff, 0x10, 0x10, 0x10))
     
     def __init__(self, board):
-        self.board = board
-
-        self.sce = avr_alloc_irq(board.avr.irq_pool, 0, 1, None)
-        self.dc = avr_alloc_irq(board.avr.irq_pool, 0, 1, None)
-        self.reset = avr_alloc_irq(board.avr.irq_pool, 0, 1, None)
+        self.sce = board.create_output()
+        self.dc = board.create_output()
+        self.reset = board.create_output()
         
         self.dirty = False
         self.pixbuf = array.array('I', [0 for i in range(self.WIDTH * self.HEIGHT)])
         self.nextXY = (0, 0)
+
+        board.connect_mosi(self.mosi)
 
     def draw(self):
         return self.pixbuf

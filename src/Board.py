@@ -18,11 +18,12 @@ class Board:
 
     def __init__(self, avr):
         self.avr = avr
+        self.mosi_callbacks = []
 
         self.lcd = LCD(self)
-        avr_connect_irq(avr.irq.getioport(('D', 6)), self.lcd.sce)
-        avr_connect_irq(avr.irq.getioport(('D', 4)), self.lcd.dc)
-        avr_connect_irq(avr.irq.getioport(('D', 7)), self.lcd.reset)
+        self.connect_output(('D', 6), self.lcd.sce)
+        self.connect_output(('D', 4), self.lcd.dc)
+        self.connect_output(('D', 7), self.lcd.reset)
         
         self.buttons = Buttons(self, self.keymap)
 
@@ -35,12 +36,19 @@ class Board:
     def mosi(self, irq, value):
         # print "MOSI: %02x" % value
 
-        self.lcd.mosi(value)
-        # self.ram.mosi(value)
-        pass
+        for cb in self.mosi_callbacks:
+            cb(value)
 
     def connect_input(self, pin):
         irq = avr_alloc_irq(self.avr.irq_pool, 0, 1, None)
         avr_connect_irq(irq, self.avr.irq.getioport(pin))
         return lambda(val): avr_raise_irq(irq, val)
-    
+
+    def create_output(self):
+        return avr_alloc_irq(self.avr.irq_pool, 0, 1, None)
+
+    def connect_output(self, pin, listener):
+        avr_connect_irq(self.avr.irq.getioport(pin), listener)
+
+    def connect_mosi(self, cb):
+        self.mosi_callbacks += [cb]
